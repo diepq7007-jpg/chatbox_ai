@@ -23,6 +23,7 @@ def home():
 
 @app.route("/chats")
 def danh_sach_chat():
+
     ds = []
 
     for ten_file in os.listdir(thu_muc):
@@ -53,6 +54,7 @@ def mo_chat(id):
     )
 
     if not os.path.exists(duong_dan):
+
         return jsonify({
             "loi": "Không tìm thấy cuộc trò chuyện"
         })
@@ -97,11 +99,13 @@ def chat():
     id = data.get("id")
 
     if cauhoi == "":
+
         return jsonify({
             "loi": "Bạn chưa nhập câu hỏi"
         }), 400
 
     if not id:
+
         id = str(int(time.time() * 1000))
 
     duong_dan = os.path.join(
@@ -129,10 +133,7 @@ def chat():
         "Người dùng: " + cauhoi
     )
 
-    noi_dung = "\n".join(
-        chat_data["lich_su"]
-    )
-
+    # TẠM THỜI KHÔNG GỬI LỊCH SỬ CHO GEMINI
     traloi = None
 
     for lan in range(3):
@@ -141,10 +142,11 @@ def chat():
 
             r = client.models.generate_content(
                 model="gemini-3.6-flash",
-                contents=noi_dung
+                contents=cauhoi
             )
 
             traloi = r.text
+
             break
 
         except Exception as e:
@@ -157,6 +159,7 @@ def chat():
             )
 
             if lan < 2:
+
                 time.sleep(lan + 1)
 
     if traloi is None:
@@ -185,4 +188,4 @@ def chat():
     return jsonify({
         "id": id,
         "traloi": traloi
-})
+    })
