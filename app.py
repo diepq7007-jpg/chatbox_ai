@@ -180,4 +180,3 @@ def chat():
         "id": id,
         "traloi": traloi
     })
-app.run(debug=True)
