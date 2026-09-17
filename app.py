@@ -99,13 +99,11 @@ def chat():
     id = data.get("id")
 
     if cauhoi == "":
-
         return jsonify({
             "loi": "Bạn chưa nhập câu hỏi"
         }), 400
 
     if not id:
-
         id = str(int(time.time() * 1000))
 
     duong_dan = os.path.join(
@@ -129,45 +127,31 @@ def chat():
             "lich_su": []
         }
 
+    # VẪN LƯU CÂU HỎI VÀO LỊCH SỬ
     chat_data["lich_su"].append(
         "Người dùng: " + cauhoi
     )
 
-    # TẠM THỜI KHÔNG GỬI LỊCH SỬ CHO GEMINI
-    traloi = None
+    try:
 
-    for lan in range(3):
+        # CHỈ GỬI CÂU HỎI HIỆN TẠI
+        # KHÔNG GỬI LỊCH SỬ
+        r = client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=cauhoi
+        )
 
-        try:
+        traloi = r.text
 
-            r = client.models.generate_content(
-                model="gemini-3.6-flash",
-                contents=cauhoi
-            )
+    except Exception as e:
 
-            traloi = r.text
-
-            break
-
-        except Exception as e:
-
-            print(
-                "LỖI GEMINI LẦN",
-                lan + 1,
-                ":",
-                e
-            )
-
-            if lan < 2:
-
-                time.sleep(lan + 1)
-
-    if traloi is None:
+        print("LỖI GEMINI:", e)
 
         return jsonify({
-            "loi": "AI đang quá tải. Vui lòng thử lại sau."
+            "loi": str(e)
         }), 503
 
+    # VẪN LƯU CÂU TRẢ LỜI VÀO LỊCH SỬ
     chat_data["lich_su"].append(
         "AI: " + traloi
     )
