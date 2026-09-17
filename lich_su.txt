@@ -1,0 +1,6 @@
+Người dùng: hello
+AI: Xin chào! Tôi có thể giúp gì cho bạn hôm nay?
+Người dùng: xin chào
+AI: Chào bạn! Rất vui được trò chuyện với bạn. 
+
+Bạn có thắc mắc gì hoặc cần tôi hỗ trợ về chủ đề nào không ạ?

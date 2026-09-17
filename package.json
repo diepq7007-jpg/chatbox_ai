@@ -1,0 +1,18 @@
+{
+  "name": "chatbox_ai",
+  "version": "1.0.0",
+  "description": "Chatbox AI",
+  "main": "electron.js",
+  "scripts": {
+    "start": "electron electron.js",
+    "build": "electron-builder"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^38.2.0",
+    "electron-builder": "^26.0.12"
+  }
+}
