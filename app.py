@@ -1,3 +1,4 @@
+```python
 import os
 import json
 import time
@@ -101,16 +102,13 @@ def chat():
             "loi": "Bạn chưa nhập câu hỏi"
         }), 400
 
-
     if not id:
         id = str(int(time.time() * 1000))
-
 
     duong_dan = os.path.join(
         thu_muc,
         id + ".json"
     )
-
 
     if os.path.exists(duong_dan):
 
@@ -119,64 +117,4 @@ def chat():
             "r",
             encoding="utf-8"
         ) as f:
-            chat_data = json.load(f)
-
-    else:
-
-        chat_data = {
-            "ten": cauhoi[:30],
-            "lich_su": []
-        }
-
-
-    chat_data["lich_su"].append(
-        "Người dùng: " + cauhoi
-    )
-
-
-    noi_dung = "\n".join(
-        chat_data["lich_su"]
-    )
-
-
-    try:
-
-        r = client.models.generate_content(
-            model="gemini-3.6-flash",
-            contents=noi_dung
-        )
-
-        traloi = r.text
-
-    except Exception as e:
-
-        print("LỖI GEMINI:", e)
-
-        return jsonify({
-            "loi": "AI gặp lỗi: " + str(e)
-        }), 500
-
-
-    chat_data["lich_su"].append(
-        "AI: " + traloi
-    )
-
-
-    with open(
-        duong_dan,
-        "w",
-        encoding="utf-8"
-    ) as f:
-
-        json.dump(
-            chat_data,
-            f,
-            ensure_ascii=False,
-            indent=2
-        )
-
-
-    return jsonify({
-        "id": id,
-        "traloi": traloi
-    })
+```
