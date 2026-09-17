@@ -1,4 +1,3 @@
-```python
 import os
 import json
 import time
@@ -117,4 +116,73 @@ def chat():
             "r",
             encoding="utf-8"
         ) as f:
-```
+            chat_data = json.load(f)
+
+    else:
+
+        chat_data = {
+            "ten": cauhoi[:30],
+            "lich_su": []
+        }
+
+    chat_data["lich_su"].append(
+        "Người dùng: " + cauhoi
+    )
+
+    noi_dung = "\n".join(
+        chat_data["lich_su"]
+    )
+
+    traloi = None
+
+    for lan in range(3):
+
+        try:
+
+            r = client.models.generate_content(
+                model="gemini-3.6-flash",
+                contents=noi_dung
+            )
+
+            traloi = r.text
+            break
+
+        except Exception as e:
+
+            print(
+                "LỖI GEMINI LẦN",
+                lan + 1,
+                ":",
+                e
+            )
+
+            if lan < 2:
+                time.sleep(lan + 1)
+
+    if traloi is None:
+
+        return jsonify({
+            "loi": "AI đang quá tải. Vui lòng thử lại sau."
+        }), 503
+
+    chat_data["lich_su"].append(
+        "AI: " + traloi
+    )
+
+    with open(
+        duong_dan,
+        "w",
+        encoding="utf-8"
+    ) as f:
+
+        json.dump(
+            chat_data,
+            f,
+            ensure_ascii=False,
+            indent=2
+        )
+
+    return jsonify({
+        "id": id,
+        "traloi": traloi
+})
