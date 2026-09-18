@@ -1,32 +1,26 @@
 <!DOCTYPE html>
+
 <html>
 
 <head>
     <title>Chatbox AI</title>
 </head>
 
-
 <body>
 
 <h1>CHATBOX AI</h1>
-
 
 <button onclick="taoChat()">
     + Cuộc trò chuyện mới
 </button>
 
-
 <h3>Cuộc trò chuyện</h3>
-
 
 <div id="danhsach"></div>
 
-
 <hr>
 
-
 <div id="lichsu"></div>
-
 
 <input
     id="cauhoi"
@@ -34,11 +28,9 @@
     placeholder="Nhập câu hỏi..."
 >
 
-
 <button onclick="gui()">
     Gửi
 </button>
-
 
 <script>
 
@@ -47,96 +39,136 @@ let chatID = null;
 
 async function taiDanhSach() {
 
-    let res = await fetch("/chats");
+    try {
 
-    let data = await res.json();
+        let res = await fetch("/chats");
 
-    let ds =
-        document.getElementById("danhsach");
+        let text = await res.text();
 
-    ds.innerHTML = "";
+        let data;
 
+        try {
+            data = JSON.parse(text);
+        }
+        catch (e) {
 
-    data.forEach(chat => {
+            console.log(
+                "Server trả về:",
+                text
+            );
 
-        let khung =
-            document.createElement("div");
+            return;
+        }
 
+        let ds =
+            document.getElementById("danhsach");
 
-        let nutMo =
-            document.createElement("button");
+        ds.innerHTML = "";
 
+        data.forEach(chat => {
 
-        nutMo.innerText = chat.ten;
+            let khung =
+                document.createElement("div");
 
+            let nutMo =
+                document.createElement("button");
 
-        nutMo.onclick = function() {
+            nutMo.innerText = chat.ten;
 
-            moChat(chat.id);
+            nutMo.onclick = function() {
 
-        };
+                moChat(chat.id);
 
+            };
 
-        let nutXoa =
-            document.createElement("button");
+            let nutXoa =
+                document.createElement("button");
 
+            nutXoa.innerText = "🗑";
 
-        nutXoa.innerText = "🗑";
+            nutXoa.onclick = function() {
 
+                xoaChat(chat.id);
 
-        nutXoa.onclick = function() {
+            };
 
-            xoaChat(chat.id);
+            khung.appendChild(nutMo);
 
-        };
+            khung.appendChild(nutXoa);
 
+            ds.appendChild(khung);
 
-        khung.appendChild(nutMo);
+        });
 
-        khung.appendChild(nutXoa);
+    }
 
+    catch (e) {
 
-        ds.appendChild(khung);
+        console.log(
+            "Lỗi tải danh sách:",
+            e
+        );
 
-    });
+    }
+
 }
-
 
 
 async function moChat(id) {
 
-    let res =
-        await fetch("/chat/" + id);
+    try {
 
+        let res =
+            await fetch("/chat/" + id);
 
-    let data =
-        await res.json();
+        let text =
+            await res.text();
 
+        let data;
 
-    chatID = id;
+        try {
+            data = JSON.parse(text);
+        }
+        catch (e) {
 
+            console.log(
+                "Server trả về:",
+                text
+            );
 
-    let lichsu =
-        document.getElementById("lichsu");
+            return;
+        }
 
+        chatID = id;
 
-    lichsu.innerHTML = "";
+        let lichsu =
+            document.getElementById("lichsu");
 
+        lichsu.innerHTML = "";
 
-    data.lich_su.forEach(tin => {
+        data.lich_su.forEach(tin => {
 
-        let p =
-            document.createElement("p");
+            let p =
+                document.createElement("p");
 
+            p.innerText = tin;
 
-        p.innerText = tin;
+            lichsu.appendChild(p);
 
+        });
 
-        lichsu.appendChild(p);
+    }
 
-    });
+    catch (e) {
+
+        console.log(
+            "Lỗi mở chat:",
+            e
+        );
+
+    }
+
 }
-
 
 
 async function xoaChat(id) {
@@ -145,56 +177,80 @@ async function xoaChat(id) {
         "Bạn có chắc muốn xóa cuộc trò chuyện này không?"
     );
 
-
     if (!xacNhan) {
         return;
     }
 
+    try {
 
-    let res =
-        await fetch("/chat/" + id, {
-            method: "DELETE"
-        });
+        let res =
+            await fetch(
+                "/chat/" + id,
+                {
+                    method: "DELETE"
+                }
+            );
 
+        let text =
+            await res.text();
 
-    let data =
-        await res.json();
+        let data;
 
+        try {
+            data = JSON.parse(text);
+        }
+        catch (e) {
 
-    if (data.ok) {
+            console.log(
+                "Server trả về:",
+                text
+            );
 
-        if (chatID == id) {
-
-            chatID = null;
-
-            document.getElementById(
-                "lichsu"
-            ).innerHTML = "";
+            return;
         }
 
+        if (data.ok) {
 
-        taiDanhSach();
+            if (chatID == id) {
+
+                chatID = null;
+
+                document.getElementById(
+                    "lichsu"
+                ).innerHTML = "";
+            }
+
+            taiDanhSach();
+
+        }
 
     }
-}
 
+    catch (e) {
+
+        console.log(
+            "Lỗi xóa chat:",
+            e
+        );
+
+    }
+
+}
 
 
 function taoChat() {
 
     chatID = null;
 
-
     document.getElementById(
         "lichsu"
     ).innerHTML = "";
 
-
     document.getElementById(
         "cauhoi"
     ).value = "";
-}
 
+}
 
 
 async function gui() {
@@ -202,57 +258,77 @@ async function gui() {
     let o =
         document.getElementById("cauhoi");
 
-
     let cauhoi =
         o.value.trim();
-
 
     if (cauhoi == "") {
         return;
     }
 
-
     let lichsu =
         document.getElementById("lichsu");
-
 
     let p =
         document.createElement("p");
 
-
     p.innerText =
         "Bạn: " + cauhoi;
 
-
     lichsu.appendChild(p);
 
-
     o.value = "";
-
 
     try {
 
         let res =
-            await fetch("/chat", {
+            await fetch(
+                "/chat",
+                {
+                    method: "POST",
 
-                method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                    body: JSON.stringify({
 
-                body: JSON.stringify({
+                        cauhoi: cauhoi,
 
-                    cauhoi: cauhoi,
-                    id: chatID
+                        id: chatID
 
-                })
+                    })
+                }
+            );
 
-            });
+        let text =
+            await res.text();
 
+        let data;
 
-        let data =
-            await res.json();
+        try {
+
+            data =
+                JSON.parse(text);
+
+        }
+        catch (e) {
+
+            let loi =
+                document.createElement("p");
+
+            loi.innerText =
+                "Lỗi server: Server không trả về dữ liệu JSON.";
+
+            lichsu.appendChild(loi);
+
+            console.log(
+                "Server trả về:",
+                text
+            );
+
+            return;
+        }
 
 
         if (!res.ok) {
@@ -260,28 +336,24 @@ async function gui() {
             let loi =
                 document.createElement("p");
 
-
             loi.innerText =
                 "Lỗi: " + data.loi;
 
-
             lichsu.appendChild(loi);
-
 
             return;
         }
 
 
-        chatID = data.id;
+        chatID =
+            data.id;
 
 
         let p2 =
             document.createElement("p");
 
-
         p2.innerText =
             "AI: " + data.traloi;
-
 
         lichsu.appendChild(p2);
 
@@ -290,16 +362,13 @@ async function gui() {
 
     }
 
-
     catch (e) {
 
         let loi =
             document.createElement("p");
 
-
         loi.innerText =
             "Lỗi kết nối: " + e;
-
 
         lichsu.appendChild(loi);
 
